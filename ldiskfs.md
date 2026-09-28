@@ -1,4 +1,4 @@
-### Mapping a Lustre OST object to its ldiskfs path
+## Special extra section: Mapping a Lustre OST object to its ldiskfs path
 
 For an ldiskfs-backed OST, objects are stored using this structure:
 
