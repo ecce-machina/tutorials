@@ -19,7 +19,7 @@ This demo was tested with:
 ```text
 Lustre version: 2.17.58_62_g550451c
 ```
-using https://github.com/ecce-machina/lustre_lab on GCP
+using https://github.com/ecce-machina/lustre_lab on GCP, you need to set the packer script to using source so it'll download master and use this instead of built RPMs.
 
 Topology:
 
