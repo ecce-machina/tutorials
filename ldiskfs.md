@@ -1,5 +1,7 @@
 # Following a Lustre File into ldiskfs
 
+In an effort to wrap my head on ldiskfs at work, I played around to see how the ldiskfs targets(MDT/OST) were affected when files were being created and then written to.
+
 This walkthrough follows one Lustre file from the client namespace into the
 ldiskfs structures on its MDT and OST. The goal is to build a concrete mental
 model of the relationship between:
