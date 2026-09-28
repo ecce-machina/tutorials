@@ -300,12 +300,95 @@ First determine which OSTs contain the data and parity objects:
 lfs getstripe -v ecfile
 ```
 
+Example:
+```
+sha256sum ecfile
+af654c5ea2e8b63b770fcade57325135ff2d126248dfe32c1735c564932ae888  ecfile
+
+lfs getstripe -v ecfile3
+ecfile3
+composite_header:
+  lcm_magic:         0x0BD60BD0
+  lcm_size:          264
+  lcm_flags:         ro
+  lcm_layout_gen:    2
+  lcm_mirror_count:  2
+  lcm_entry_count:   2
+components:
+  - lcme_id:             65537
+    lcme_mirror_id:      1
+    lcme_flags:          init
+    lcme_mirror_link_id: 0x2
+    lcme_extent.e_start: 0
+    lcme_extent.e_end:   EOF
+    lcme_offset:         128
+    lcme_size:           80
+    sub_layout:
+      lmm_magic:         0x0BD10BD0
+      lmm_seq:           0x200000404
+      lmm_object_id:     0x2
+      lmm_fid:           [0x200000404:0x2:0x0]
+      lmm_stripe_count:  2
+      lmm_stripe_size:   4194304
+      lmm_pattern:       raid0
+      lmm_layout_gen:    0
+      lmm_stripe_offset: 1
+      lmm_objects:
+      -   0: { l_ost_idx:   1, l_fid: [0x280000400:0x2:0x0] }
+      -   1: { l_ost_idx:   0, l_fid: [0x2c0000400:0x2:0x0] }
+
+  - lcme_id:             131074
+    lcme_mirror_id:      2
+    lcme_flags:          init,parity
+    lcme_mirror_link_id: 0x1
+    lcme_dstripe_count:  2
+    lcme_cstripe_count:  1
+    lcme_ec:             2+1
+    lcme_ec_raidset_count: 1
+    lcme_ec_raidsets:
+      - 0: { ec_data_count: 2, data_stripes: "0-1", parity_stripes: "0-0" }
+    lcme_extent.e_start: 0
+    lcme_extent.e_end:   EOF
+    lcme_offset:         208
+    lcme_size:           56
+    sub_layout:
+      lmm_magic:         0x0BD10BD0
+      lmm_seq:           0x200000404
+      lmm_object_id:     0x2
+      lmm_fid:           [0x200000404:0x2:0x0]
+      lmm_stripe_count:  1
+      lmm_stripe_size:   4194304
+      lmm_pattern:       raid0,parity
+      lmm_layout_gen:    0
+      lmm_stripe_offset: 2
+      lmm_objects:
+      -   0: { l_ost_idx:   2, l_fid: [0x240000400:0x3:0x0] }
+```
+
+Indicates that:
+```
+OST0 = data
+OST1 = data
+OST2 = parity
+```
+
 Then make one OST unavailable using an appropriate test mechanism for the lab.
+
+We'll do OST0, only on the client
+
+```
+lctl dl | grep OST0000
+  6 UP osc lustrefs-OST0000-osc-ffff8e2e80edf800 766e0ed5-afaa-476f-bd76-ec79e84bdfc2 5
+lctl --device lustrefs-OST0000-osc-ffff8e2e80edf800 deactivate
+lctl dl | grep OST0000
+  6 IN osc lustrefs-OST0000-osc-ffff8e2e80edf800 766e0ed5-afaa-476f-bd76-ec79e84bdfc2 5
+```
 
 Read the file again:
 
 ```bash
 sha256sum ecfile
+af654c5ea2e8b63b770fcade57325135ff2d126248dfe32c1735c564932ae888  ecfile
 ```
 
 If EC recovery succeeds, the checksum should match the checksum recorded before the failure.
