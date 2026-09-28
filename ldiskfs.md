@@ -216,7 +216,7 @@ NAME FSTYPE FSVER LABEL               UUID
 sdb  ext4   1.0   lustrefs:OST0001    a27b98e9-6f03-48a6-aa43-71f9329c6f46
 ```
 
-## 5. Special section: map an OST object ID to its ldiskfs path
+## 5. Map an OST object ID to its ldiskfs path
 
 For the legacy ldiskfs OST object directory layout, the path is:
 
