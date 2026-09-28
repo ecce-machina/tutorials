@@ -19,6 +19,7 @@ This demo was tested with:
 ```text
 Lustre version: 2.17.58_62_g550451c
 ```
+using https://github.com/ecce-machina/lustre_lab on GCP
 
 Topology:
 
