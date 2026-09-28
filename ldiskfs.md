@@ -1,10 +1,8 @@
 # Following a Lustre File into ldiskfs
 
-In an effort to wrap my head on ldiskfs at work, I played around to see how the ldiskfs targets(MDT/OST) were affected when files were being created and then written to.
+While trying to get a better handle on ldiskfs for work, I decided to follow a file from the Lustre client down to its MDT inode and OST object. I created an empty file, inspected both targets, wrote 8 MiB to it, and then looked at what changed.
 
-This walkthrough follows one Lustre file from the client namespace into the
-ldiskfs structures on its MDT and OST. The goal is to build a concrete mental
-model of the relationship between:
+The goal is to build a concrete mental model of the relationship between:
 
 - the file's client-visible FID;
 - its namespace inode and layout metadata on the MDT;
@@ -445,41 +443,3 @@ they remain cached summary metadata. The actual data blocks are on the OST.
 - [Introduction to Lustre Object Storage Devices](https://wiki.lustre.org/Introduction_to_Lustre_Object_Storage_Devices_%28OSDs%29)
 - [`debugfs(8)` manual page](https://man7.org/linux/man-pages/man8/debugfs.8.html)
 
-## Special extra section: Mapping a Lustre OST object to its ldiskfs path
-
-For an ldiskfs-backed OST, objects are stored using this structure:
-
-```text
-/O/<sequence>/d<bucket>/<object_id>
-```
-
-The bucket is calculated as:
-
-```text
-bucket = object_id & (subdirectory_count - 1)
-```
-
-The usual subdirectory count is 32, producing directories `d0` through `d31`. In that case:
-
-```text
-bucket = object_id & 31
-```
-
-For example, `lfs getstripe -v` reported:
-
-```text
-OST index:  1
-object ID:  4
-group:      0x280000400
-```
-
-Therefore:
-
-```text
-bucket = 4 & 31 = 4
-path   = /O/280000400/d4/4
-```
-
-The `group` field is the object sequence in older Lustre terminology. The sequence directory is written without the `0x` prefix.
-
-The subdirectory count is stored in the OST’s `last_rcvd` data and is normally 32, but it should be confirmed rather than assumed when examining an unfamiliar filesystem.
